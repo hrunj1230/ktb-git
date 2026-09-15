@@ -6,7 +6,7 @@ KTB Git-Flow 컨벤션(이슈 → 브랜치 → Conventional Commit → `dev` PR
 
 ## 에이전트 스킬 (권장)
 
-팀 저장소에 패키지를 설치하지 않습니다. 각자 에이전트가 읽는 스킬 폴더에 `SKILL.md`만 두면 됩니다.
+이 저장소를 clone할 필요는 없습니다. 스킬은 `SKILL.md` 한 파일이고, 에이전트는 그걸 읽고 `git`/`gh`를 실행합니다. Python CLI나 레포 소스는 필요 없습니다.
 
 | 에이전트 | 넣는 위치 |
 |---|---|
@@ -14,9 +14,37 @@ KTB Git-Flow 컨벤션(이슈 → 브랜치 → Conventional Commit → `dev` PR
 | Claude Code | `~/.claude/skills/ktb-git/SKILL.md` |
 | Cursor | `~/.cursor/skills/ktb-git/SKILL.md` |
 
-### 개인 등록
+### 개인 등록 (파일만 받기)
 
-쓰는 에이전트만 연결하면 됩니다. 심볼릭 링크라 나중에 `git pull`하면 스킬도 같이 갱신됩니다.
+쓰는 에이전트 경로만 바꿔서 실행하면 됩니다.
+
+```sh
+mkdir -p ~/.grok/skills/ktb-git
+curl -fsSL https://raw.githubusercontent.com/hrunj1230/ktb-git/main/skills/ktb-git/SKILL.md \
+  -o ~/.grok/skills/ktb-git/SKILL.md
+```
+
+Claude Code:
+
+```sh
+mkdir -p ~/.claude/skills/ktb-git
+curl -fsSL https://raw.githubusercontent.com/hrunj1230/ktb-git/main/skills/ktb-git/SKILL.md \
+  -o ~/.claude/skills/ktb-git/SKILL.md
+```
+
+Cursor:
+
+```sh
+mkdir -p ~/.cursor/skills/ktb-git
+curl -fsSL https://raw.githubusercontent.com/hrunj1230/ktb-git/main/skills/ktb-git/SKILL.md \
+  -o ~/.cursor/skills/ktb-git/SKILL.md
+```
+
+에이전트 세션을 한 번 다시 시작합니다. Grok이면 `/skills`에 `ktb-git`이 보이면 된 겁니다. `/ktb-git`으로 직접 호출하거나, "브랜치 파줘", "커밋해줘", "dev로 PR 올려줘"라고 하면 컨벤션을 따릅니다.
+
+### clone은 언제?
+
+나중에 `git pull`로 스킬을 같이 갱신하고 싶을 때만 clone합니다.
 
 ```sh
 git clone https://github.com/hrunj1230/ktb-git.git ~/Documents/ktb-git
@@ -26,11 +54,9 @@ ln -sfn ~/Documents/ktb-git/skills/ktb-git ~/.claude/skills/ktb-git
 ln -sfn ~/Documents/ktb-git/skills/ktb-git ~/.cursor/skills/ktb-git
 ```
 
-에이전트 세션을 한 번 다시 시작합니다. Grok이면 `/skills`에 `ktb-git`이 보이면 된 겁니다. `/ktb-git`으로 직접 호출하거나, "브랜치 파줘", "커밋해줘", "dev로 PR 올려줘"라고 하면 컨벤션을 따릅니다.
+### 팀 전원이 자동으로 쓰게 하려면
 
-### 프로젝트에 넣고 싶다면
-
-레포 안에 스킬만 두면 클론한 사람 전원에게 적용됩니다.
+팀 레포에 스킬만 커밋하면 됩니다. 개인이 ktb-git을 따로 clone하지 않습니다.
 
 ```text
 <팀레포>/.grok/skills/ktb-git/SKILL.md
