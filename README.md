@@ -6,16 +6,39 @@ KTB Git-Flow 컨벤션(이슈 → 브랜치 → Conventional Commit → `dev` PR
 
 ## 에이전트 스킬 (권장)
 
-Grok / Claude가 커밋·브랜치·PR을 대신할 때 이 스킬을 로드합니다.
+팀 저장소에 패키지를 설치하지 않습니다. 각자 에이전트가 읽는 스킬 폴더에 `SKILL.md`만 두면 됩니다.
+
+| 에이전트 | 넣는 위치 |
+|---|---|
+| Grok | `~/.grok/skills/ktb-git/SKILL.md` |
+| Claude Code | `~/.claude/skills/ktb-git/SKILL.md` |
+| Cursor | `~/.cursor/skills/ktb-git/SKILL.md` |
+
+### 개인 등록
+
+쓰는 에이전트만 연결하면 됩니다. 심볼릭 링크라 나중에 `git pull`하면 스킬도 같이 갱신됩니다.
 
 ```sh
 git clone https://github.com/hrunj1230/ktb-git.git ~/Documents/ktb-git
-mkdir -p ~/.grok/skills ~/.claude/skills
+mkdir -p ~/.grok/skills ~/.claude/skills ~/.cursor/skills
 ln -sfn ~/Documents/ktb-git/skills/ktb-git ~/.grok/skills/ktb-git
 ln -sfn ~/Documents/ktb-git/skills/ktb-git ~/.claude/skills/ktb-git
+ln -sfn ~/Documents/ktb-git/skills/ktb-git ~/.cursor/skills/ktb-git
 ```
 
-이후 프로젝트에서 "브랜치 파줘", "커밋해줘", "dev로 PR 올려줘"라고 하면 컨벤션을 따릅니다.
+에이전트 세션을 한 번 다시 시작합니다. Grok이면 `/skills`에 `ktb-git`이 보이면 된 겁니다. `/ktb-git`으로 직접 호출하거나, "브랜치 파줘", "커밋해줘", "dev로 PR 올려줘"라고 하면 컨벤션을 따릅니다.
+
+### 프로젝트에 넣고 싶다면
+
+레포 안에 스킬만 두면 클론한 사람 전원에게 적용됩니다.
+
+```text
+<팀레포>/.grok/skills/ktb-git/SKILL.md
+```
+
+Claude Code는 `.claude/skills/ktb-git/`, Cursor는 `.cursor/skills/ktb-git/` 입니다.
+
+`grok plugin install hrunj1230/ktb-git` 은 아직 해당 없습니다. 플러그인 형식(`plugin.json`)으로 올리지 않았습니다.
 
 ## 터미널 CLI (선택)
 
