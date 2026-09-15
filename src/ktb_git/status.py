@@ -44,6 +44,15 @@ def next_action(branch: str | None, dirty_count: int, ahead_count: int | None, p
 
 
 def snapshot(runner: Runner) -> Snapshot:
+    if not gitops.is_repo(runner):
+        return Snapshot(
+            branch=None,
+            linked_issue=None,
+            dirty_count=0,
+            ahead_count=None,
+            pr_url=None,
+            next_action="다음: ktb start로 git 저장소와 origin을 연결하세요.",
+        )
     root = gitops.repo_root(runner)
     project = config.load_project_config(root)
     branch = None if gitops.is_detached(runner) else gitops.current_branch(runner)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ktb_git import conventions, gitops, lint
+from ktb_git import bootstrap, conventions, gitops, lint
 from ktb_git.errors import KtbError
 from ktb_git.runner import CommandError, Runner
 from ktb_git.wizard import Choice, Wizard
@@ -22,6 +22,7 @@ def run(
     dry_run: bool = False,
     skip_ruff: bool = False,
 ) -> str:
+    bootstrap.ensure_project(runner, wizard, need_remote=False, need_gh=False, dry_run=dry_run)
     branch = gitops.current_branch(runner)
     if branch == "main":
         raise KtbError("main 브랜치에서 직접 커밋할 수 없습니다. ktb start로 작업 브랜치를 만드세요.")

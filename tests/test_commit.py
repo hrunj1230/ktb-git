@@ -24,6 +24,10 @@ class CapturingRunner(FakeRunner):
 def _runner(*, branch: str = "feat/garnet-login", staged: str = "file.py\0") -> CapturingRunner:
     runner = CapturingRunner()
     runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, "/tmp/repo\n", ""),
+    )
+    runner.script(
         ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
         Completed([], 0, f"{branch}\n", ""),
     )
@@ -93,6 +97,10 @@ def test_ruff_touched_staged_file_is_restaged(monkeypatch: pytest.MonkeyPatch) -
 
 def test_commit_refuses_main() -> None:
     runner = CapturingRunner()
+    runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, "/tmp/repo\n", ""),
+    )
     runner.script(
         ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
         Completed([], 0, "main\n", ""),

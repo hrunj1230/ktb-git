@@ -13,8 +13,16 @@ def _runner(root: Path, branch: str = "dev") -> FakeRunner:
         Completed([], 0, f"{root}\n", ""),
     )
     runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, f"{root}\n", ""),
+    )
+    runner.script(
         ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
         Completed([], 0, f"{branch}\n", ""),
+    )
+    runner.script(
+        ["git", "remote", "get-url", "origin"],
+        Completed([], 0, "https://github.com/org/repo.git\n", ""),
     )
     return runner
 

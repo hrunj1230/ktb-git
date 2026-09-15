@@ -26,11 +26,23 @@ description: >
 
 이슈 번호는 `git config branch.<name>.ktbIssue`에 저장한다.
 
+## 프로젝트 연결 (모든 작업 전)
+
+이미 되어 있으면 확인하고 넘어간다. 스킬 설치와 프로젝트 remote는 별개다.
+
+1. `git rev-parse --show-toplevel` 성공이면 git 저장소다. 실패면 사용자 확인 후 `git init`.
+2. `git remote get-url origin` 성공이면 `origin 연결됨: <url>`을 보여 주고 다음으로.
+3. origin이 없으면 사용자에게 고른다.
+   - Git URL 입력: `https://github.com/owner/repo.git` 또는 `git@github.com:owner/repo.git`. 형식이 아니면 다시 묻는다. `git remote add origin <url>`.
+   - 새로 만들기: 저장소 이름과 공개/비공개를 묻고 `gh repo create <name> --private|--public --source . --remote origin`.
+4. start/ship이면 `gh auth status`. 실패 시 `gh auth login` 안내 후 중단.
+5. start에서 `git fetch origin`이 실패해도(빈 원격) 중단하지 않는다. `origin/dev`(hotfix는 `origin/main`)가 있으면 그걸 베이스로 쓰고, 없으면 로컬 `dev`/`main`, 그것도 없으면 현재 HEAD에서 분기한다고 알린다.
+
 ## 흐름
 
-1. **start** — 새 이슈 또는 열린 이슈 선택 → 브랜치 종류 확정(fix/hotfix만 이슈 분류를 따르고 나머지는 feat, 사용자가 바꿀 수 있음) → fetch 후 베이스 체크아웃 → `git checkout -b` → ktbIssue 저장. push 하지 않음.
-2. **commit** — 변경 없으면 중단. main에서 커밋 거부. ruff 수정 후 스테이징 → 메시지 미리보기 → `git commit -F`. push 하지 않음.
-3. **ship** — main/dev에서 거부. 베이스보다 앞선 커밋 없으면 거부. ruff 검사 실패면 중단. `git push -u origin HEAD`. 기존 PR 있으면 URL만. 없으면 `gh pr create --base <dev|main>`.
+1. **start** — 프로젝트 연결 확인 → 새 이슈 또는 열린 이슈 선택 → 브랜치 종류 확정(fix/hotfix만 이슈 분류를 따르고 나머지는 feat, 사용자가 바꿀 수 있음) → fetch 후 베이스 체크아웃 → `git checkout -b` → ktbIssue 저장. push 하지 않음.
+2. **commit** — git 저장소만 있으면 된다(remote 불필요). 변경 없으면 중단. main에서 커밋 거부. ruff 수정 후 스테이징 → 메시지 미리보기 → `git commit -F`. push 하지 않음.
+3. **ship** — 프로젝트 연결 확인 → main/dev에서 거부. 베이스보다 앞선 커밋 없으면 거부. ruff 검사 실패면 중단. `git push -u origin HEAD`. 기존 PR 있으면 URL만. 없으면 `gh pr create --base <dev|main>`.
 
 ## PR 본문
 

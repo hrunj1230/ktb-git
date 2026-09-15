@@ -10,6 +10,10 @@ def _runner(root: Path, *, dirty: bool, ahead: int) -> FakeRunner:
         ["git", "rev-parse", "--show-toplevel"],
         Completed([], 0, f"{root}\n", ""),
     )
+    runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, f"{root}\n", ""),
+    )
     for _ in range(2):
         runner.script(
             ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],

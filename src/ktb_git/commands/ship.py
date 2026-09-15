@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ktb_git import config, conventions, github, gitops, lint
+from ktb_git import bootstrap, config, conventions, github, gitops, lint
 from ktb_git.errors import KtbError
 from ktb_git.runner import CommandError, Runner
 from ktb_git.wizard import Wizard
@@ -39,6 +39,7 @@ def run(
     dry_run: bool = False,
     skip_ruff: bool = False,
 ) -> str:
+    bootstrap.ensure_project(runner, wizard, need_remote=True, need_gh=True, dry_run=dry_run)
     root = gitops.repo_root(runner)
     branch = gitops.current_branch(runner)
     if conventions.is_protected_branch(branch):
@@ -52,8 +53,6 @@ def run(
     origin_base = f"origin/{base}"
     if gitops.commits_ahead(runner, origin_base) < 1:
         raise KtbError(f"{origin_base}보다 앞선 커밋이 없습니다. 먼저 ktb commit을 실행하세요.")
-    if not dry_run:
-        github.ensure_gh(runner)
 
     if skip_ruff:
         print("경고: --skip-ruff로 Ruff 검사를 건너뜁니다.")

@@ -14,11 +14,37 @@ def _git(runner: Runner, args: list[str], *, check: bool = True, dry_run: bool =
         raise KtbError("git을 찾을 수 없습니다. git을 설치한 뒤 다시 시도하세요.") from exc
 
 
+def is_repo(runner: Runner) -> bool:
+    result = _git(runner, ["rev-parse", "--show-toplevel"], check=False)
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
+def init_repo(runner: Runner, *, dry_run: bool = False) -> None:
+    _git(runner, ["init"], dry_run=dry_run)
+
+
 def repo_root(runner: Runner) -> Path:
     result = _git(runner, ["rev-parse", "--show-toplevel"], check=False)
     if result.returncode or not result.stdout.strip():
         raise KtbError("Git 저장소 안에서 ktb를 실행하세요.")
     return Path(result.stdout.strip())
+
+
+def origin_url(runner: Runner) -> str | None:
+    result = _git(runner, ["remote", "get-url", "origin"], check=False)
+    url = result.stdout.strip()
+    if result.returncode or not url:
+        return None
+    return url
+
+
+def add_origin(runner: Runner, url: str, *, dry_run: bool = False) -> None:
+    _git(runner, ["remote", "add", "origin", url], dry_run=dry_run)
+
+
+def ref_exists(runner: Runner, ref: str) -> bool:
+    result = _git(runner, ["rev-parse", "--verify", "--quiet", ref], check=False)
+    return result.returncode == 0
 
 
 def is_detached(runner: Runner) -> bool:
@@ -77,8 +103,9 @@ def commit(runner: Runner, message: str, *, dry_run: bool = False) -> None:
         message_path.unlink(missing_ok=True)
 
 
-def fetch_origin(runner: Runner, *, dry_run: bool = False) -> None:
-    _git(runner, ["fetch", "origin"], dry_run=dry_run)
+def fetch_origin(runner: Runner, *, dry_run: bool = False) -> bool:
+    result = _git(runner, ["fetch", "origin"], check=False, dry_run=dry_run)
+    return result.returncode == 0
 
 
 def checkout(runner: Runner, ref: str, *, dry_run: bool = False) -> None:

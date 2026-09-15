@@ -42,6 +42,8 @@ curl -fsSL https://raw.githubusercontent.com/hrunj1230/ktb-git/main/skills/ktb-g
 
 에이전트 세션을 한 번 다시 시작합니다. Grok이면 `/skills`에 `ktb-git`이 보이면 된 겁니다. `/ktb-git`으로 직접 호출하거나, "브랜치 파줘", "커밋해줘", "dev로 PR 올려줘"라고 하면 컨벤션을 따릅니다.
 
+스킬을 받는 것과 프로젝트 remote는 별개입니다. 작업 대상 폴더에 `origin`이 이미 있으면 확인하고 넘어갑니다. 없으면 GitHub URL을 받거나 `gh repo create`로 만든 뒤 연결하고 이슈/브랜치/PR 작업을 이어 갑니다. 로컬 커밋만 할 때는 remote가 없어도 됩니다.
+
 ### clone은 언제?
 
 나중에 `git pull`로 스킬을 같이 갱신하고 싶을 때만 clone합니다.

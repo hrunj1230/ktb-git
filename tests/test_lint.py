@@ -58,6 +58,10 @@ def test_missing_uv_has_install_link(monkeypatch: pytest.MonkeyPatch) -> None:
 def _commit_runner() -> FakeRunner:
     runner = FakeRunner()
     runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, "/tmp/repo\n", ""),
+    )
+    runner.script(
         ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
         Completed([], 0, "feat/garnet-login\n", ""),
     )
@@ -94,8 +98,16 @@ def _ship_runner(root) -> FakeRunner:
         Completed([], 0, f"{root}\n", ""),
     )
     runner.script(
+        ["git", "rev-parse", "--show-toplevel"],
+        Completed([], 0, f"{root}\n", ""),
+    )
+    runner.script(
         ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
         Completed([], 0, "feat/garnet-login\n", ""),
+    )
+    runner.script(
+        ["git", "remote", "get-url", "origin"],
+        Completed([], 0, "https://github.com/org/repo.git\n", ""),
     )
     runner.script(
         ["git", "rev-list", "--count", "origin/dev..HEAD"],

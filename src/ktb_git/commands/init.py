@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ktb_git import config, conventions, github, gitops
+from ktb_git import bootstrap, config, conventions, gitops
 from ktb_git.config import UserConfig
 from ktb_git.runner import Runner
 from ktb_git.wizard import Wizard
@@ -47,8 +47,8 @@ def ensure_user_config(wizard: Wizard, *, config_path: Path | None = None, dry_r
 
 
 def run(runner: Runner, wizard: Wizard, *, config_path: Path | None = None) -> UserConfig:
+    bootstrap.ensure_project(runner, wizard, need_remote=True, need_gh=True)
     gitops.repo_root(runner)
-    github.ensure_gh(runner)
     existing = config.load_user_config(config_path)
     cfg = _ask_config(wizard, existing)
     saved = config.save_user_config(cfg, config_path)

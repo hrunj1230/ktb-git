@@ -20,6 +20,21 @@ def _gh(runner: Runner, args: list[str], *, check: bool = True, dry_run: bool = 
         raise _gh_error("gh를 찾을 수 없습니다.") from exc
 
 
+def create_remote_repo(
+    runner: Runner,
+    name: str,
+    *,
+    private: bool = True,
+    dry_run: bool = False,
+) -> None:
+    visibility = "--private" if private else "--public"
+    _gh(
+        runner,
+        ["repo", "create", name, visibility, "--source", ".", "--remote", "origin"],
+        dry_run=dry_run,
+    )
+
+
 def ensure_gh(runner: Runner) -> None:
     result = _gh(runner, ["auth", "status"], check=False)
     if result.returncode:

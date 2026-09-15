@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ktb_git import config, conventions, github, gitops
+from ktb_git import bootstrap, config, conventions, github, gitops
 from ktb_git.commands.init import ensure_user_config
 from ktb_git.errors import KtbError
 from ktb_git.runner import Runner
@@ -37,14 +37,13 @@ def run(
     dry_run: bool = False,
     config_path: Path | None = None,
 ) -> str:
+    bootstrap.ensure_project(runner, wizard, need_remote=True, need_gh=True, dry_run=dry_run)
     root = gitops.repo_root(runner)
     current = gitops.current_branch(runner)
     if conventions.is_workflow_branch(current):
         print(f"현재 작업 브랜치({current})에서 새 브랜치를 시작합니다.")
     if gitops.dirty_files(runner):
         print("변경 파일이 있습니다. 브랜치 전환이 충돌하면 중단될 수 있습니다.")
-    if not dry_run:
-        github.ensure_gh(runner)
     user = ensure_user_config(wizard, config_path=config_path, dry_run=dry_run)
     project = config.load_project_config(root)
 
@@ -101,7 +100,9 @@ def run(
     if not wizard.confirm("start_confirm", "이슈와 브랜치를 시작할까요?", default=True):
         raise KtbError("브랜치 시작을 취소했습니다.")
 
-    gitops.fetch_origin(runner, dry_run=dry_run)
+    if not gitops.fetch_origin(runner, dry_run=dry_run):
+        print("origin fetch에 실패했습니다. 원격이 비어 있으면 로컬 베이스를 사용합니다.")
+    base_ref = bootstrap.resolve_base_ref(runner, base_ref)
     gitops.checkout(runner, base_ref, dry_run=dry_run)
     gitops.create_branch(runner, branch, base_ref, dry_run=dry_run)
     if issue_number:
